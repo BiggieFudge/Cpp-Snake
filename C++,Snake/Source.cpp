@@ -27,26 +27,30 @@ snake Snake;
 apple Apple;
 
 
-bool gameover(int rows,int columns) {
-	if (Snake.x[0] == -1 || Snake.x[0] == rows -2 || Snake.y[0] == -1 || Snake.y[0] == columns-2) {
-		system("CLS");
-		cout << "Game Over";
-		return false;
-	}
-	return true;
-}
-
-
 bool SearchArray(int i, int j) {
-	int x = 0, y = 0;
+	int x = 0;
 
-	for (int x = 0; x < Snake.size; x++) {
+	for (int x = 1; x < Snake.size; x++) {
 		if (Snake.x[x] == j && Snake.y[x] == i) {
 			return true;
 		}
 	}
 	return false;
 }
+
+bool gameover(int rows,int columns) {
+	if (Snake.x[0] == -1 || Snake.x[0] == rows -2 || Snake.y[0] == -1 || Snake.y[0] == columns-2/*Check if out of bounds*/ ||
+		SearchArray( Snake.y[0] , Snake.x[0]) /*Check if hits itself*/) {
+		system("CLS");
+		cout << "Game Over";
+		return false;
+	}
+	
+	return true;
+}
+
+
+
 
 void ForwardTheLast() {
 	if (Snake.size == 1)
@@ -196,7 +200,7 @@ bool play(int rows,int columns) {
 		cout << "|";
 		for (int i = 0; i < columns - 2; i++) {
 
-			if (SearchArray(i,j)) {
+			if ((Snake.x[0]==j && Snake.y[0]==i)||SearchArray(i,j)) {
 				cout << "S";
 			}
 			else if (Apple.x == j && Apple.y == i) {
