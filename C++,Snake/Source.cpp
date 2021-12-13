@@ -11,7 +11,7 @@ using namespace std;
 int columns, rows;  // Size of the console
 
 
-
+//Structs
 struct snake {
 	int size = 1;
 	int* x; int* y;
@@ -19,12 +19,10 @@ struct snake {
 
 };
 
-
 struct apple {
 	int x;
 	int y;
 };
-
 
 snake Snake;
 apple Apple;
@@ -68,6 +66,7 @@ void Initialize(int rows,int columns) {
 	Snake.x[0] = (rand() % (rows - 3)) + 1;
 	Snake.y[0] = (rand() % (columns - 3)) + 1;
 	GenerateApple(rows, columns);
+	Snake.size = 1;
 	Snake.direction = 0;
 }
 
@@ -135,9 +134,9 @@ bool ChangeDirection() {
 }
 
 
-bool move() {
+bool move(int diffuclty) {
 
-	int speed = 15;
+	int speed = (double)(15 / diffuclty);
 	if ((Snake.direction==1 && 
 		Snake.y[0] == Apple.y && Snake.x[0]-1 == Apple.x) ||
 		(Snake.direction == 2 &&
@@ -228,7 +227,19 @@ bool move() {
 }
 
 
-bool play() {
+bool play(int diffuclty) {
+
+	HideConsoleCursor(); //Hides the curses
+	srand(time(NULL));
+	//Check console size
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+	//End Check
+
+
 	system("CLS");
 	for (int i = 0; i < columns; i++) {
 		cout << "=";
@@ -260,10 +271,49 @@ bool play() {
 
 	ChangeDirection();
 
-	return move();
+	return move(diffuclty);
 	
 
 	
+}
+
+
+void mainmenu() {
+
+	
+
+	//How to fullscreen.
+	int diffuclty,walls;
+	cout << "```SSSSSSSSSSSSSSS```````````````````````````````````kkkkkkkk````````````````````````````" << endl <<
+		"`SS:::::::::::::::S``````````````````````````````````k::::::k````````````````````````````" << endl <<
+		"S:::::SSSSSS::::::S``````````````````````````````````k::::::k````````````````````````````" << endl <<
+		"S:::::S`````SSSSSSS``````````````````````````````````k::::::k````````````````````````````" << endl <<
+		"S:::::S``````````nnnn``nnnnnnnn``````aaaaaaaaaaaaa````k:::::k````kkkkkkk`eeeeeeeeeeee````" << endl <<
+		"S:::::S``````````n:::nn::::::::nn````a::::::::::::a```k:::::k```k:::::kee::::::::::::ee``" << endl <<
+		"`S::::SSSS```````n::::::::::::::nn```aaaaaaaaa:::::a``k:::::k``k:::::ke::::::eeeee:::::ee" << endl <<
+		"``SS::::::SSSSS``nn:::::::::::::::n```````````a::::a``k:::::k`k:::::ke::::::e`````e:::::e" << endl <<
+		"````SSS::::::::SS``n:::::nnnn:::::n````aaaaaaa:::::a``k::::::k:::::k`e:::::::eeeee::::::e" << endl <<
+		"```````SSSSSS::::S`n::::n````n::::n``aa::::::::::::a``k:::::::::::k``e:::::::::::::::::e`" << endl <<
+		"````````````S:::::Sn::::n````n::::n`a::::aaaa::::::a``k:::::::::::k``e::::::eeeeeeeeeee``" << endl <<
+		"````````````S:::::Sn::::n````n::::na::::a````a:::::a``k::::::k:::::k`e:::::::e```````````" << endl <<
+		"SSSSSSS`````S:::::Sn::::n````n::::na::::a````a:::::a`k::::::k`k:::::ke::::::::e``````````" << endl <<
+		"S::::::SSSSSS:::::Sn::::n````n::::na:::::aaaa::::::a`k::::::k``k:::::ke::::::::eeeeeeee``" << endl <<
+		"S:::::::::::::::SS`n::::n````n::::n`a::::::::::aa:::ak::::::k```k:::::kee:::::::::::::e``" << endl <<
+		"`SSSSSSSSSSSSSSS```nnnnnn````nnnnnn``aaaaaaaaaa``aaaakkkkkkkk````kkkkkkk`eeeeeeeeeeeeee``" << endl;
+
+	cout << endl << "Enter Diffuctly(1-Easy  -- 5-Hard)"<<endl;
+	cin >> diffuclty;
+	cout << endl << "Go through wall? (1-yes, otherwise-no)"<< endl;
+	cin >> walls;
+	
+	Initialize(rows, columns);
+
+	do {
+		ChangeDirection();
+
+
+	} while (play(diffuclty));
+
 }
 
 
@@ -271,24 +321,10 @@ int main() {
 
 	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	std::cout.flush();
-	SetConsoleTextAttribute(hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY); //Set the console color
+	SetConsoleTextAttribute(hOut, FOREGROUND_BLUE | FOREGROUND_INTENSITY); //Set the console text color
 	
 	
-	HideConsoleCursor(); //Hides the curses
-	srand(time(NULL));
-	//Check console size
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-	columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-	rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-	//End Check
-	Initialize(rows, columns);
 	
-	do {
-		ChangeDirection();
-		
-
-	} while (play());
-
+	
+	mainmenu();
 }
